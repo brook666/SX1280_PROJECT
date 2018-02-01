@@ -1,0 +1,276 @@
+
+
+#include "My_type.h"
+#include "sx1276_radio.h"
+#include "sx1276-LoRa.h"
+
+
+
+void KeyRead( void )
+{
+	u8 ReadData;
+	Flg_S_BW10=1;//S_BW10;//
+	Flg_S_BW62=1;//S_BW62;//
+	Flg_S_BW125=0;//S_BW125;//
+	Flg_S_FSK=1;//S_FSK;//
+	Flg_S_Tx_Rx=0;//S_Tx_Rx;   0/TX  1/RX
+	ReadData=Flg^0xff;
+        Trg = ReadData & (ReadData ^ Cont);     
+        Cont = ReadData;                           
+        Cont &= 0x1F;
+	//if((Cont!=ContBak)&&(ContBak!=0xff))
+	//WWDG_CR=0X8F;//STM8 软件复位整个系统
+}
+
+void SX1276_Parameters_Select()
+{
+			ContBak=Cont;
+			if((Cont&0x10)==cTx_Statue	)
+				{
+					Flg_SX1276_RXorTX=Sx1276_TxMode;
+					Tx_phase=SetTx_Parameters;
+				}
+			else
+				{
+					Flg_SX1276_RXorTX=Sx1276_RxMode;
+					Rx_phase=Rx_Parameters_Set;
+				}
+		
+			switch(Cont&0x0F)
+				{
+					case 1:
+						/****BW 选择*********/
+						gb_BW=1;//10.4K  BW
+						//gb_BW=2;//15.6K  BW 
+						//gb_BW=3;//20.8K  BW 
+						//gb_BW=4;//31.2K  BW 
+						//gb_BW=5;//41.7K  BW 
+						//gb_BW=6;//62.5K  BW 
+						//gb_BW=7;//125KHz BW 
+						/****BW 选择结束*********/
+						
+						/*******SF 选择*********/
+						//gb_SF=0;// SF=6;  64 chips / symbol
+						//gb_SF=1;// SF=7;  128 chips / symbol
+						//gb_SF=2;// SF=8;  256 chips / symbol
+						//gb_SF=3;// SF=9;  9  512 chips / symbol
+						gb_SF=4;////SF=10; 1024 chips / symbol
+						//gb_SF=5;////SF=11; 2048 chips / symbol
+						//gb_SF=6;//SF=12;  4096 chips / symbol
+						/****SF 选择结束*********/
+						
+						/*******CR 选择*********/
+						//CR=1;////  Error coding rate=4/5
+						CR=2;////  Error coding rate=4/6
+						//CR=3;////  Error coding rate=4/7
+						//CR=4;////  Error coding rate=4/8
+						/*******CR 选择结束*********/
+						break;
+
+					case 2:
+						/****BW 选择*********/
+						//gb_BW=1;//10.4K  BW
+						//gb_BW=2;//15.6K  BW 
+						//gb_BW=3;//20.8K  BW 
+						//gb_BW=4;//31.2K  BW 
+						//gb_BW=5;//41.7K  BW 
+						gb_BW=6;//62.5K  BW 
+						//gb_BW=7;//125KHz BW 
+						/****BW 选择结束*********/
+						
+						//gb_SF=0;// SF=6;  64 chips / symbol
+						//gb_SF=1;// SF=7;  128 chips / symbol
+						//gb_SF=2;// SF=8;  256 chips / symbol
+						//gb_SF=3;// SF=9;  9  512 chips / symbol
+						//gb_SF=4;////SF=10; 1024 chips / symbol
+						gb_SF=5;////SF=11; 2048 chips / symbol
+						//gb_SF=6;//SF=12;  4096 chips / symbol
+						
+						/*******CR 选择*********/
+						//CR=1;////  Error coding rate=4/5
+						CR=2;////  Error coding rate=4/6
+						//CR=3;////  Error coding rate=4/7
+						//CR=4;////  Error coding rate=4/8
+						/*******CR 选择结束*********/
+						break;
+					
+					case 4:  //125KHz BW   SF=10;  Error coding rate=4/6
+						/****BW 选择*********/
+						//gb_BW=1;//10.4K  BW
+						//gb_BW=2;//15.6K  BW 
+						//gb_BW=3;//20.8K  BW 
+						//gb_BW=4;//31.2K  BW 
+						//gb_BW=5;//41.7K  BW 
+						//gb_BW=6;//62.5K  BW 
+						gb_BW=7;//125KHz BW 
+						/****BW 选择结束*********/
+
+						/*******SF 选择*********/
+						//gb_SF=0;// SF=6;  64 chips / symbol
+						//gb_SF=1;// SF=7;  128 chips / symbol
+						//gb_SF=2;// SF=8;  256 chips / symbol
+						//gb_SF=3;// SF=9;  9  512 chips / symbol
+						gb_SF=4;////SF=10; 1024 chips / symbol
+						//gb_SF=5;////SF=11; 2048 chips / symbol
+						//gb_SF=6;//SF=12;  4096 chips / symbol
+						/****SF 选择结束*********/
+
+						/*******CR 选择*********/
+						//CR=1;////  Error coding rate=4/5
+						CR=2;////  Error coding rate=4/6
+						//CR=3;////  Error coding rate=4/7
+						//CR=4;////  Error coding rate=4/8
+						/*******CR 选择结束*********/
+						break;
+					case 8:
+						//FSK
+						break;
+					default://10.4K   SF=7; cr=4/6
+						/****BW 选择*********/
+						gb_BW=1;//10.4K  BW
+						//gb_BW=2;//15.6K  BW 
+						//gb_BW=3;//20.8K  BW 
+						//gb_BW=4;//31.2K  BW 
+						//gb_BW=5;//41.7K  BW 
+						//gb_BW=6;//62.5K  BW 
+						//gb_BW=7;//125KHz BW 
+						/****BW 选择结束*********/
+
+						/*******SF 选择*********/
+						//gb_SF=0;// SF=6;  64 chips / symbol
+						gb_SF=1;// SF=7;  128 chips / symbol
+						//gb_SF=2;// SF=8;  256 chips / symbol
+						//gb_SF=3;// SF=9;  9  512 chips / symbol
+						//gb_SF=4;////SF=10; 1024 chips / symbol
+						//gb_SF=5;////SF=11; 2048 chips / symbol
+						//gb_SF=6;//SF=12;  4096 chips / symbol
+						/****SF 选择结束*********/
+
+						/*******CR 选择*********/
+						//CR=1;////  Error coding rate=4/5
+						CR=2;////  Error coding rate=4/6
+						//CR=3;////  Error coding rate=4/7
+						//CR=4;////  Error coding rate=4/8
+						/*******CR 选择结束*********/
+						break;	
+				}
+	}
+
+
+
+void Lora_transmit( void )
+{ 
+  CLK_CKDIVR = 0x08;         // 16M内部RC经2分频后系统时钟为8M
+	asm("sim");  		   // 关全局中断
+	Sx1276EV_IO_Inital();	   //EVB IO 初始化
+        TIM1_init();
+	EXTI_init();
+	UART1_init();
+
+	Sx1276M_GpioInt();//SX1276 IO初始化
+	RF_RST=1;
+	Sx1276VerNO = SPIRead((u8)(REG_LR_VERSION>>8));//获取SX1276 版本号 0X11(V1A版本 工程版）或者0X12（V1B 正式版）  
+        LED_RX=1;
+	LED_TX=1;
+        Flg_RxFinish=0;
+	KeyRead();
+        SX1276_Parameters_Select();
+        asm("rim");  // 开全局中断
+	while(1)
+	{   
+		if(Flg_SX1276_RXorTX==Sx1276_TxMode)//发射模式,下面是发射流程
+			{
+				switch(Tx_phase)//SetTx_Parameters
+	       			{
+	       				case SetTx_Parameters:
+								SW_Swith_TX();
+								SX1276_LoRaEntryTx();
+								Tx_phase=Write_FIFO_AndTx;
+								break;
+									
+						case Write_FIFO_AndTx:
+								SX1276_LoRaTxPacket();
+								Tx_phase=Wait_Tx_Finish;
+								LED_TX=1;
+								break;
+								
+						case Wait_Tx_Finish:
+								if(RF_IRQ_DIO0)                     //Packet send over 发送完成了IRQ 变为H,平时L
+									//if(TxTimeCout>2)
+                                    {
+										SX1276_LoRaClearIrq(); //Clear irq
+										SX1276_Standby(); //Entry Standby mode  
+										TxTimeCout=0;
+										Tx_phase=Wait_NextTx;
+										LED_TX=0;
+									}
+								break;
+						case Wait_NextTx:
+								if(TxTimeCout>2)///200ms 发射间隔
+									{
+										Tx_phase=SetTx_Parameters;
+										TxTimeCout=0;
+									}
+								break;
+	       			}
+			}
+		
+		else //接收模式
+			{
+			  	if((SX1276_GetStatue_Cout>100)&&(Flg_RxFinish==0))//定时获取SX1276 的状态，确保SX1276 在RX状态
+			  		{
+			  			SX1276_GetStatue_Cout=0;
+						Sx1276Statue = SPIRead((u8)(LR_RegOpMode>>8));
+							 if(Sx1276Statue!=cSx1276RxStatue)
+								Rx_phase=Rx_Parameters_Set;
+			  		}
+				 switch(Rx_phase)//
+	       			{
+	       				case Rx_Parameters_Set:
+								SW_Swith_RX();
+								SX1276_LoRaEntryRx();
+								RF_IRQ_EN();
+								SX1276_GetStatue_Cout=150;
+								Rx_phase=Wait_RxFinish;
+								break;
+						case Wait_RxFinish:
+								if(Flg_RxFinish)
+									{
+										Flg_RxFinish=0;
+										LED_RX=~LED_RX;
+										PER_Proc();//PER 处理程序，从UART输出(波特率19200bps)PER 信息，100个包为一个Cycle，
+								                                                                       
+                                                                        }
+								break;
+	       			}
+			}
+	}
+}
+
+
+/**********************************************************
+	外部中断PE入口                    
+**********************************************************/ 
+#pragma vector = 8     
+__interrupt void EXTI_PD(void)
+{
+	SX1276_LoRaRxPacket();
+}
+
+/**********************************************************
+	Timer1 中断入口                    
+**********************************************************/ 
+#pragma vector=TIM1_OVR_UIF_vector
+__interrupt void TIM1_OVR_UIF(void)//定时100ms 一个周期
+{
+	SX1276_GetStatue_Cout++;
+	TxTimeCout++;
+	KeyRead();//按键扫描
+  	TIM1_SR1 = 0;  // 清除更新中断标记
+}
+
+
+/**********************************************************
+	程序结束           
+**********************************************************/ 
+

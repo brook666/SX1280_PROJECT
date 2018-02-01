@@ -1,0 +1,14 @@
+--create .\Lib\nwk_layer.lib
+.\lib\nwk.o
+.\lib\nwk_api.o
+.\lib\nwk_frame.o
+.\lib\nwk_globals.o
+.\lib\nwk_qmgmt.o
+.\lib\nwk_freq.o
+.\lib\nwk_ioctl.o
+.\lib\nwk_join.o
+.\lib\nwk_link.o
+.\lib\nwk_mgmt.o
+.\lib\nwk_ping.o
+.\lib\nwk_security.o
+.\lib\nwk_joinlist.o
